@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.User;
 import com.example.cms.exception.UserAlreadyExistsByEmailException;
+import com.example.cms.exception.UserNotFoundException;
 import com.example.cms.repository.UserRepository;
 import com.example.cms.requestdto.UserRequest;
 import com.example.cms.responsedto.UserResponse;
@@ -33,6 +34,22 @@ public class UserServiceImp implements UserService {
 		return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
 				.setMessage("User registered Successfully").setData(mapToUserResponse(user)));
 	}
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> deleteUser(int userId) {
+				return userRepository.findById(userId).map(user->{
+					user.setDeleted(true);
+					return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
+							.setMessage("User deleted Successfully").setData(mapToUserResponse(userRepository.save(user))));
+				}).orElseThrow(()-> new UserNotFoundException("USer Not found success fully"));
+	}
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> userFindById(int userId) {
+		
+		return userRepository.findById(userId).map(user->{
+			return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
+					.setMessage("User found Successfully").setData(mapToUserResponse(user)));
+		}).orElseThrow(()-> new UserNotFoundException("USer Not found success fully"));
+	}
 
 	private User mapToUser(UserRequest userRequest, User user) {
 		user.setUserName(userRequest.getUserName());
@@ -46,4 +63,8 @@ public class UserServiceImp implements UserService {
 				.createdAt(user.getCreatedAt()).lastModifiedAt(user.getLastModifiedAt()).build();
 	}
 
-}
+	
+
+	
+
+	}

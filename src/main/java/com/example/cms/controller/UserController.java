@@ -3,6 +3,7 @@ package com.example.cms.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,10 +41,17 @@ public class UserController {
 	public String test() {
 		return "Hello from cms";
 	}
-	
+	@Operation(description = "the end point is used to soft deleted user", responses = {
+			@ApiResponse(responseCode = "200", description = "user deletd success fully", content = {
+					@Content(schema = @Schema(implementation = ResponseStructure.class)) }),
+			@ApiResponse(responseCode = "400", description = "invalid input") })
 	@DeleteMapping("/users/{userId}")
-	public ResponseEntity<ResponseStructure<UserResponse>> deleteUser(int userId){
+	public ResponseEntity<ResponseStructure<UserResponse>> deleteUser(@PathVariable int userId){
 		return userService.deleteUser(userId);
 	}
 	
-}
+	
+	@GetMapping("/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> userFindById(@PathVariable int userId){
+		return userService.userFindById(userId);
+	}}
