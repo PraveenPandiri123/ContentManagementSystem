@@ -38,9 +38,9 @@ public class UserServiceImp implements UserService {
 		user.setUserName(userRequest.getUserName());
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+		user.setDeleted(false);
 		return user;
 	}
-
 	private UserResponse mapToUserResponse(User user) {
 		return UserResponse.builder().userId(user.getUserId()).userName(user.getUserName()).email(user.getEmail())
 				.createdAt(user.getCreatedAt()).lastModifiedAt(user.getLastModifiedAt()).build();
