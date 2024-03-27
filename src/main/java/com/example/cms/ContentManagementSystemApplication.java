@@ -9,6 +9,7 @@ import com.example.cms.controller.UserController;
 public class ContentManagementSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ContentManagementSystemApplication.class, args);		
+		SpringApplication.run(ContentManagementSystemApplication.class, args);	
+		System.out.println("Application Has Started");
 	}
 }
