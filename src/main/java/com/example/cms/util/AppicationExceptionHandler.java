@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.example.cms.exception.TitleAlreadyExistsException;
+import com.example.cms.exception.TopicNotspecifiedException;
 import com.example.cms.exception.UserAlreadyExistsByEmailException;
 import com.example.cms.exception.UserNotFoundException;
 
@@ -58,6 +60,14 @@ public class AppicationExceptionHandler extends ResponseEntityExceptionHandler {
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "given user is not present with given Id");
 	}
 
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleTopicNotspecifiedException(TopicNotspecifiedException ex) {
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "topic is not specified");
+	}
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>> handleTitleAlreadyExistsException(TitleAlreadyExistsException ex) {
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "given title is alredy exists");
+	}
 	private ResponseEntity<ErrorStructure<String>> errorResponse(HttpStatus status, String message, String rootcause) {
 
 		return new ResponseEntity<ErrorStructure<String>>(
