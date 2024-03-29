@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.Blog;
+import com.example.cms.exception.BlogNotFoundBYId;
 import com.example.cms.exception.TitleAlreadyExistsException;
 import com.example.cms.exception.TopicNotspecifiedException;
 import com.example.cms.exception.UserNotFoundException;
@@ -19,6 +20,7 @@ import com.example.cms.responsedto.BlogResonse;
 import com.example.cms.service.BlogService;
 import com.example.cms.util.ResponseStructure;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -36,7 +38,7 @@ public class BlogServiceImp implements BlogService {
 				throw new TitleAlreadyExistsException("Given title name is alredy present");
 			if (blogRequest.getTopics().length < 1)
 				throw new TopicNotspecifiedException("failed to create blog");
-			
+
 			Blog blog = mapToBlog(blogRequest, new Blog());
 
 			blog.setUsers(Arrays.asList(user));
@@ -44,6 +46,32 @@ public class BlogServiceImp implements BlogService {
 					.setMessage("blog created successfully").setData(mapToBlogResponset(blogRepository.save(blog))));
 		}).orElseThrow(() -> new UserNotFoundException("failed to create blog"));
 
+	}
+	@Override
+	public ResponseEntity<Boolean> checkForBlogTitleAvailability(String title) {
+	
+		return ResponseEntity.ok(blogRepository.existsByTitle(title));
+	}
+	@Override
+	public ResponseEntity<ResponseStructure<BlogResonse>> findByBlogId(int blogId) {
+		return blogRepository.findById(blogId).map(blog -> {
+			return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
+					.setMessage("log found successfully").setData(mapToBlogResponset(blog)));
+		}).orElseThrow(() -> new BlogNotFoundBYId("blog is not found"));
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<BlogResonse>> updateBlog(int blogId, @Valid BlogRequest blogRequest) {
+
+		return blogRepository.findById(blogId).map(blog -> {
+			if (blogRepository.existsByTitle(blogRequest.getTitle()))
+				throw new TitleAlreadyExistsException("Given title name is alredy present");
+			if (blogRequest.getTopics().length < 1)
+				throw new TopicNotspecifiedException("failed to create blog");
+			return ResponseEntity
+					.ok(responseStructure.setStatus(HttpStatus.OK.value()).setMessage("blog updated successfully")
+							.setData(mapToBlogResponset(blogRepository.save(mapToBlog(blogRequest, blog)))));
+		}).orElseThrow(() -> new BlogNotFoundBYId("blog not found by given id"));
 	}
 
 	private Blog mapToBlog(BlogRequest blogRequest, Blog blog) {
@@ -55,9 +83,9 @@ public class BlogServiceImp implements BlogService {
 
 	private BlogResonse mapToBlogResponset(Blog blog) {
 		return BlogResonse.builder().blogId(blog.getBlogId()).title(blog.getTitle()).topics(blog.getTopics())
-				.createdAt(blog.getCreatedAt())
-				.lastModifiedAt(blog.getLastModifiedAt())
-				.about(blog.getAbout()).build();
+				.createdAt(blog.getCreatedAt()).lastModifiedAt(blog.getLastModifiedAt()).about(blog.getAbout()).build();
 	}
+
+
 
 }
