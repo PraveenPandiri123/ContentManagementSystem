@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,9 @@ public class User {
 	@LastModifiedDate
 	private LocalDateTime lastModifiedAt;
 	private boolean deleted;
-	@ManyToMany(mappedBy = "users")
+
+	@OneToMany(mappedBy = "user")
 	private List<Blog> blogs;
+	
+	
 }

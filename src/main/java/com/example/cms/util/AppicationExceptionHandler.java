@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.example.cms.exception.BlogNotFoundBYId;
+import com.example.cms.exception.ContributionPanelrNotFoundException;
+import com.example.cms.exception.IllegalAccesRequestException;
 import com.example.cms.exception.TitleAlreadyExistsException;
 import com.example.cms.exception.TopicNotspecifiedException;
 import com.example.cms.exception.UserAlreadyExistsByEmailException;
@@ -67,6 +70,20 @@ public class AppicationExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ErrorStructure<String>> handleTitleAlreadyExistsException(TitleAlreadyExistsException ex) {
 		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "given title is alredy exists");
+	}
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>>  handleBlogNotFoundBYId (BlogNotFoundBYId ex) {
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),"Blog not fond by given id");
+	}
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>>  handleIllegalAccesRequestException (IllegalAccesRequestException ex) {
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "unAuthored exception");
+	}
+	
+	
+	@ExceptionHandler
+	public ResponseEntity<ErrorStructure<String>>  handleContributionPanelrNotFoundException (ContributionPanelrNotFoundException ex) {
+		return errorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "ContributionPanelrNotFoundException by given id");
 	}
 	private ResponseEntity<ErrorStructure<String>> errorResponse(HttpStatus status, String message, String rootcause) {
 
