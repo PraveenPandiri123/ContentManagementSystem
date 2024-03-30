@@ -14,6 +14,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
@@ -34,6 +36,9 @@ public class Blog {
 	@LastModifiedDate
 	private LocalDateTime lastModifiedAt;
 	
-	@ManyToMany
-	private List<User>  users;
+	@ManyToOne
+	private User  user;
+	
+	@OneToOne
+	private contributionPanel contributionpanel;
 }
