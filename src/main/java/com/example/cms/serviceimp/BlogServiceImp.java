@@ -1,19 +1,8 @@
 package com.example.cms.serviceimp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.cms.entity.Blog;
@@ -30,7 +19,6 @@ import com.example.cms.responsedto.BlogResonse;
 import com.example.cms.service.BlogService;
 import com.example.cms.util.ResponseStructure;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -39,29 +27,31 @@ public class BlogServiceImp implements BlogService {
 	private ResponseStructure<BlogResonse> responseStructure;
 	private UserRepository userRepository;
 	private BlogRepository blogRepository;
-    private ContributionPanelrepository contributionPanelrepository;
-	@Override
-	public ResponseEntity<ResponseStructure<BlogResonse>> createBlog(int userId, BlogRequest blogRequest) {
+	private ContributionPanelrepository contributionPanelrepository;
 
-		return userRepository.findById(userId).map(user -> {
+	@Override
+	public ResponseEntity<ResponseStructure<BlogResonse>> createBlog(BlogRequest blogRequest) {
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		return userRepository.findByEmail(email).map(user -> {
 			if (blogRepository.existsByTitle(blogRequest.getTitle()))
 				throw new TitleAlreadyExistsException("Given title name is alredy present");
 			if (blogRequest.getTopics().length < 1)
 				throw new TopicNotspecifiedException("failed to create blog");
-
 			Blog blog = mapToBlog(blogRequest, new Blog());
 			blog.setContributionpanel(contributionPanelrepository.save(new contributionPanel()));
 			blog.setUser(user);
 			return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
 					.setMessage("blog created successfully").setData(mapToBlogResponset(blogRepository.save(blog))));
-		}).orElseThrow(() -> new UserNotFoundException("failed to create blog"));
+		}).get();
 
 	}
+
 	@Override
 	public ResponseEntity<Boolean> checkForBlogTitleAvailability(String title) {
-	
+
 		return ResponseEntity.ok(blogRepository.existsByTitle(title));
 	}
+
 	@Override
 	public ResponseEntity<ResponseStructure<BlogResonse>> findByBlogId(int blogId) {
 		return blogRepository.findById(blogId).map(blog -> {
@@ -71,7 +61,7 @@ public class BlogServiceImp implements BlogService {
 	}
 
 	@Override
-	public ResponseEntity<ResponseStructure<BlogResonse>> updateBlog(int blogId,  BlogRequest blogRequest) {
+	public ResponseEntity<ResponseStructure<BlogResonse>> updateBlog(int blogId, BlogRequest blogRequest) {
 
 		return blogRepository.findById(blogId).map(blog -> {
 			if (blogRepository.existsByTitle(blogRequest.getTitle()))
@@ -95,7 +85,5 @@ public class BlogServiceImp implements BlogService {
 		return BlogResonse.builder().blogId(blog.getBlogId()).title(blog.getTitle()).topics(blog.getTopics())
 				.createdAt(blog.getCreatedAt()).lastModifiedAt(blog.getLastModifiedAt()).about(blog.getAbout()).build();
 	}
-
-
 
 }

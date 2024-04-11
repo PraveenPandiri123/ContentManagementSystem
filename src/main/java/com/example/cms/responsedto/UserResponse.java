@@ -23,5 +23,5 @@ public class UserResponse {
 	private String email;
 	private LocalDateTime createdAt;
 	private LocalDateTime lastModifiedAt;
-
+	
 }

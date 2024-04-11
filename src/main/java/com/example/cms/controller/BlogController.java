@@ -23,9 +23,9 @@ import lombok.AllArgsConstructor;
 public class BlogController {
 	private BlogService blogService;
 
-	@PostMapping("/users/{userId}/blogs")
-	public ResponseEntity<ResponseStructure<BlogResonse>> createBlog(@PathVariable int userId, @RequestBody @Valid BlogRequest blogRequest) {
-		return blogService.createBlog(userId, blogRequest);
+	@PostMapping("/blogs")
+	public ResponseEntity<ResponseStructure<BlogResonse>> createBlog(@RequestBody @Valid BlogRequest blogRequest) {
+		return blogService.createBlog(blogRequest);
 	}
 	@GetMapping("/blogs/{blogId}")
 	public ResponseEntity<ResponseStructure<BlogResonse>> findByBlogId(@PathVariable int blogId)
