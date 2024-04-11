@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 
 public interface BlogService {
 
-	ResponseEntity<ResponseStructure<BlogResonse>> createBlog(int userId,  BlogRequest blogRequest);
+	ResponseEntity<ResponseStructure<BlogResonse>> createBlog(BlogRequest blogRequest);
 
 	ResponseEntity<ResponseStructure<BlogResonse>> findByBlogId(int blogId);
 

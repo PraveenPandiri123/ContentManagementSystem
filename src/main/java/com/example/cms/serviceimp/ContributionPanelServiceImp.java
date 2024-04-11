@@ -34,15 +34,17 @@ public class ContributionPanelServiceImp implements ContributionPanelService {
 		return userRepository.findByEmail(email).map(owner -> {
 
 			return contributionPanelrepository.findById(panelId).map(panel -> {
-
-				if (blogRepository.existsByUserAndContributionpanel(owner, panel))
+				System.out.println("before");
+				if (!blogRepository.existsByUserAndContributionpanel(owner, panel))// for checking adding person is
+																					// owner or not
 					throw new IllegalAccesRequestException("failed to add user");
 
 				return userRepository.findById(userId).map(contributer -> {
-
-					if (!panel.getUsers().contains(contributer) && panel.getUsers().contains(owner)) { // *****
-						panel.getUsers().add(contributer);
+					
+					if (!panel.getUsers().contains(contributer) && !(owner.equals(contributer))) { // *****!(owner.equals(contributer))
+						panel.getUsers().add(contributer);// if contributer was not exists in list before
 						contributionPanelrepository.save(panel);
+						System.out.println("after");
 					}
 					return ResponseEntity.ok(responseStructure.setStatus(HttpStatus.OK.value())
 							.setMessage("userAdd successfully to the contribution panel").setData(panel));
@@ -64,8 +66,8 @@ public class ContributionPanelServiceImp implements ContributionPanelService {
 
 			return contributionPanelrepository.findById(panelId).map(panel -> {
 
-				if (blogRepository.existsByUserAndContributionpanel(owner, panel))
-					throw new IllegalAccesRequestException("failed to add user");
+				if (!blogRepository.existsByUserAndContributionpanel(owner, panel))
+					throw new IllegalAccesRequestException("failed to remove user");
 
 				return userRepository.findById(userId).map(contributer -> {
 
