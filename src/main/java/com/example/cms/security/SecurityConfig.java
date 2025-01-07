@@ -36,7 +36,7 @@ public class SecurityConfig {
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf->csrf.disable())//cross side request forgery
-				.authorizeHttpRequests(auth->auth.requestMatchers("/user/register").permitAll().anyRequest().authenticated())
+				.authorizeHttpRequests(auth->auth.requestMatchers("/user/register","/users/{userId}").permitAll().anyRequest().authenticated())
 				.formLogin(Customizer.withDefaults())
 				.build();
 	}
